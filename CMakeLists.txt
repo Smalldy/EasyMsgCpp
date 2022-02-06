@@ -15,12 +15,12 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY
 
 
 
-set(PROJECT_DESCRIPTION "CMake project of my base library")
+set(PROJECT_DESCRIPTION "EasyMsg is a simple tool for comuniation between objects")
 set(PROJECT_VERSION_MAJOR       "1")
 set(PROJECT_VERSION_MINOR       "0")
 set(PROJECT_VERSION_PATCH       "0")
 set(PROJECT_VERSION             "${META_VERSION_MAJOR}.${META_VERSION_MINOR}.${META_VERSION_PATCH}")
 
-
+add_compile_options("-fexec-charset=GBK")
 add_subdirectory(src)
 add_subdirectory(examples)
