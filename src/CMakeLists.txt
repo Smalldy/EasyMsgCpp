@@ -16,6 +16,7 @@ set(EASYMASG_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_sources(EasyMsg
     PRIVATE
         easy_msg.cpp
+        easymsg_callback.cpp
 )
 
 target_include_directories(EasyMsg

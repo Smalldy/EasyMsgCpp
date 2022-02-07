@@ -2,9 +2,13 @@
 #define EASYMSG_H
 #include "easymsg_export.h"
 #include <assert.h>
+#include <functional>
 #include <iostream>
 #include <string>
 #include <utility>
+
+namespace em {
+
 class EasyMsg;
 
 class EASYMSG_API EasyMsg {
@@ -58,8 +62,8 @@ template <typename _MSG_> std::string MsgId() {
 #define MSG_ID_STR(_MSG_) MAKE_MSG_ID_CAT(_MSG_)
 
 #define EASY_MSG_DEFINE(_MSG_, _MSG_ID_)                                       \
-  template <> std::string MsgId<_MSG_>() { return MSG_ID_STR(_MSG_); }         \
-  struct _MSG_##_MSG : public _MSG_, public EasyMsg {                          \
+  template <> std::string em::MsgId<_MSG_>() { return MSG_ID_STR(_MSG_); }     \
+  struct _MSG_##_MSG : public _MSG_, public em::EasyMsg {                      \
   public:                                                                      \
     std::string id() const { return MSG_ID_STR(_MSG_); }                       \
   };                                                                           \
@@ -68,8 +72,10 @@ template <typename _MSG_> std::string MsgId() {
     static const std::string value;                                            \
     using MsgType = _MSG_##_MSG;                                               \
   };                                                                           \
-  const std::string _MSG_ID_::value = MsgId<_MSG_>();
+  const std::string _MSG_ID_::value = em::MsgId<_MSG_>();
 
 #define DeclareMsg
+
+} // namespace em
 
 #endif // EASYMSG_H
