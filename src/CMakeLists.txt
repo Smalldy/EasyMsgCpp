@@ -17,6 +17,14 @@ target_sources(EasyMsg
     PRIVATE
         easy_msg.cpp
         easymsg_callback.cpp
+        easymsg_dispatcher.cpp
+        easymsg_subscriber.cpp
+
+        include/easymsg_export.h
+        include/easy_msg.h
+        include/easymsg_callback.h
+        include/easymsg_dispatcher.h
+        include/easymsg_subscriber.h
 )
 
 target_include_directories(EasyMsg

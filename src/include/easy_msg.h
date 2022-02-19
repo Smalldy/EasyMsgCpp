@@ -1,5 +1,6 @@
 #ifndef EASYMSG_H
 #define EASYMSG_H
+#include "easymsg_dispatcher.h"
 #include "easymsg_export.h"
 #include <assert.h>
 #include <functional>
@@ -65,6 +66,8 @@ template <typename _MSG_> std::string MsgId() {
   template <> std::string em::MsgId<_MSG_>() { return MSG_ID_STR(_MSG_); }     \
   struct _MSG_##_MSG : public _MSG_, public em::EasyMsg {                      \
   public:                                                                      \
+    _MSG_##_MSG() = default;                                                   \
+    _MSG_##_MSG(_MSG_ msg) : _MSG_{msg} {}                                     \
     std::string id() const { return MSG_ID_STR(_MSG_); }                       \
   };                                                                           \
   struct _MSG_ID_ {                                                            \
@@ -75,6 +78,18 @@ template <typename _MSG_> std::string MsgId() {
   const std::string _MSG_ID_::value = em::MsgId<_MSG_>();
 
 #define DeclareMsg
+
+template <typename _MSG_ID>
+auto easymsg_cast(EasyMsg *msg) -> typename _MSG_ID::MsgType * {
+  return static_cast<typename _MSG_ID::MsgType *>(msg);
+}
+
+extern EASYMSG_API EasyMsgDispatcher ___dispatcher;
+
+template <typename _MSG_ID>
+void EASYMSG_API sendMsg(typename _MSG_ID::MsgType *msg) {
+  ___dispatcher.dispatchMsg<_MSG_ID>(msg);
+}
 
 } // namespace em
 
