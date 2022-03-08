@@ -53,31 +53,38 @@ public:
 #endif
 };
 
-// 定义消息后 一定会经过模板特化，因此调用非特化版本的MsgId意味着没有定义此消息
-template <typename _MSG_> std::string MsgId() {
-  assert(!("EasyMsg: subscript invalid EasyMsg!"));
-  return "";
-}
-
 #define MAKE_MSG_ID_CAT(_MSG_) #_MSG_
 #define MSG_ID_STR(_MSG_) MAKE_MSG_ID_CAT(_MSG_)
 
 #define EASY_MSG_DEFINE(_MSG_, _MSG_ID_)                                       \
-  template <> std::string em::MsgId<_MSG_>() { return MSG_ID_STR(_MSG_); }     \
   struct _MSG_##_MSG : public _MSG_, public em::EasyMsg {                      \
   public:                                                                      \
     _MSG_##_MSG() = default;                                                   \
     _MSG_##_MSG(_MSG_ msg) : _MSG_{msg} {}                                     \
     std::string id() const { return MSG_ID_STR(_MSG_); }                       \
   };                                                                           \
+  static const char *_MSG_ID_##helper{(char *)MSG_ID_STR(_MSG_)};              \
   struct _MSG_ID_ {                                                            \
   public:                                                                      \
-    static const std::string value;                                            \
+    static constexpr const char *const &value{_MSG_ID_##helper};               \
     using MsgType = _MSG_##_MSG;                                               \
-  };                                                                           \
-  const std::string _MSG_ID_::value = em::MsgId<_MSG_>();
+  };
 
-#define DeclareMsg
+/* 上述宏定义过于复杂 下边做一下解释
+ * 在最初的设计中 是不存在 _MSG_ID_##_Helper 的，为了完成 _MSG_ID_::value
+ *的定义， 原本的方案是将 value 定义为 constexpr static const char *
+ *，此方案废弃的原因 也非常现实，在c++11中，static constexpr
+ *变量必须在声明时初始化，也必须在类外进行
+ * 定义，此处代码时宏定义生成，是无法在cpp中重新进行定义的，但是，也无法在头文件中定义，
+ * 否则将会造成重定义错误，如果你使用c++17
+ *那么这将不会造成任何问题，为了兼容，我决定 采用一些取巧的方法来规避这个问题。
+ *
+ * 首先 _MSG_ID_::value 的设计目的是直接获得一个字符串，但是无需每次都构造
+ *_MSG_ID_ 对象
+ * 在不违反最初设计的前提下，我将注意力关注在错误的地方————重定义，因此，我将此变量更改
+ * 为引用，避免引发重定义问题，引用的目标则是一个文件内的静态变量，由于文件内的静态变量
+ * 只对文件内可见，所以不会引发任何问题。
+ **/
 
 template <typename _MSG_ID>
 auto easymsg_cast(EasyMsg *msg) -> typename _MSG_ID::MsgType * {

@@ -10,11 +10,15 @@ target_link_directories( msgmatch_example
 )
 target_link_libraries( msgmatch_example
     PRIVATE
-        libEasyMsg
+        EasyMsg
 )
 set_target_properties(msgmatch_example PROPERTIES CXX_EXTENSIONS OFF)
 
-add_executable(msgcallback_example 02_msgcallback_example/main.cxx)
+add_executable(msgcallback_example
+ 02_msgcallback_example/main.cxx
+ 02_msgcallback_example/mailbox.cpp
+ )
+
 target_compile_features(msgcallback_example PUBLIC cxx_std_11)
 target_include_directories(msgcallback_example
     PRIVATE
@@ -26,6 +30,6 @@ target_link_directories( msgcallback_example
 )
 target_link_libraries( msgcallback_example
     PRIVATE
-        libEasyMsg
+        EasyMsg
 )
 set_target_properties(msgcallback_example PROPERTIES CXX_EXTENSIONS OFF)

@@ -3,7 +3,5 @@
 #include <iostream>
 namespace em {
 EasyMsgDispatcher ___dispatcher;
-
-EasyMsg::EasyMsg() { std::cout << __FUNCTION__ << std::endl; }
-
+EasyMsg::EasyMsg() {}
 } // namespace em
