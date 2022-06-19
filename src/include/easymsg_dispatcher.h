@@ -20,34 +20,33 @@ class EASYMSG_API EasyMsgDispatcher {
 public:
   EasyMsgDispatcher();
   //添加回调函数
-  template <typename _MSG_ID, typename _HOST>
-  void addCallback(_HOST *host_obj,
-                   void (_HOST::*handle_msg_callback)(em::EasyMsg *)) {
+  template <typename EASY_MSG_ID, typename HOST_OBJ>
+  void addCallback(HOST_OBJ *host_obj,
+                   void (HOST_OBJ::*handle_msg_callback)(em::EasyMsg *)) {
 
     std::function<void(em::EasyMsg *)> host_callback =
         std::bind(handle_msg_callback, host_obj, std::placeholders::_1);
 
-    auto iter = find_callback(host_obj, _MSG_ID::value);
+    auto iter = find_callback(host_obj, EASY_MSG_ID::value);
     if (iter == msg_callback_vector_.end()) {
       msg_callback_vector_.emplace_back(std::make_tuple(
-          reinterpret_cast<std::int64_t>(host_obj), _MSG_ID::value,
+          reinterpret_cast<std::int64_t>(host_obj), EASY_MSG_ID::value,
           EasyMsgCallback(std::move(host_callback))));
       return;
     }
     std::get<2>(*iter) = std::move(host_callback);
   }
-  //移除此 host_obj，订阅的消息为 _MSG_ID 的回调函数
-  template <typename _MSG_ID, typename _HOST>
-  void removeCallback(_HOST *host_obj) {
-    auto iter = find_callback(host_obj, _MSG_ID::value);
+  //移除此 host_obj，订阅的消息为 EASY_MSG_ID 的回调函数
+  template <typename EASY_MSG_ID, typename HOST_OBJ>
+  void removeCallback(HOST_OBJ *host_obj) {
+    auto iter = find_callback(host_obj, EASY_MSG_ID::value);
     if (iter == msg_callback_vector_.end()) {
       return;
     }
     msg_callback_vector_.erase(iter);
-    return;
-  }
+ }
   //移除此 host_obj 订阅的所有消息对应的回调函数
-  template <typename _HOST> void removeCallback(_HOST *host_obj) {
+  template <typename HOST_OBJ> void removeCallback(HOST_OBJ *host_obj) {
     for (auto iter = msg_callback_vector_.begin();
          iter != msg_callback_vector_.end();) {
       if (std::get<kHostObj>(*iter) ==
@@ -60,9 +59,8 @@ public:
   }
 
   template <typename _MSG_ID> void dispatchMsg(typename _MSG_ID::MsgType *msg) {
-    for (auto iter = msg_callback_vector_.begin();
-         iter != msg_callback_vector_.end(); ++iter) {
-      std::get<kMsgCallback> (*iter)(static_cast<EasyMsg *>(msg));
+    for (auto & iter : msg_callback_vector_) {
+      std::get<kMsgCallback> (iter)(static_cast<EasyMsg *>(msg));
     }
   }
 

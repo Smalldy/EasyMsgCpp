@@ -1,6 +1,6 @@
 #include "easymsg_dispatcher.h"
 namespace em {
 
-EasyMsgDispatcher::EasyMsgDispatcher() {}
+EasyMsgDispatcher::EasyMsgDispatcher() = default;
 
 } // namespace em

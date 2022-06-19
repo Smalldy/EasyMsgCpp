@@ -12,25 +12,25 @@ public:
   EasyMsgSubscriber();
   ~EasyMsgSubscriber();
 
-  template <typename _MSGID, typename _HOST>
-  void subscribe(_HOST *hostObj, void (_HOST::*handleMsg)(EasyMsg *)) {
+  template <typename EASY_MSG_ID, typename HOST_OBJ>
+  void subscribe(HOST_OBJ *hostObj, void (HOST_OBJ::*handleMsg)(EasyMsg *)) {
     EasyMsgDispatcher &dispatcher = getDispatcher();
-    dispatcher.addCallback<_MSGID>(hostObj, handleMsg);
+    dispatcher.addCallback<EASY_MSG_ID>(hostObj, handleMsg);
     host_ptr = static_cast<void *>(hostObj);
   }
 
-  template <typename _MSGID, typename _HOST> void unSubscribe(_HOST *hostObj) {
+  template <typename EASY_MSG_ID, typename HOST_OBJ> void unSubscribe(HOST_OBJ *hostObj) {
     if (host_ptr != static_cast<void *>(hostObj)) {
       return;
     }
     EasyMsgDispatcher &dispatcher = getDispatcher();
-    dispatcher.removeCallback<_MSGID>(hostObj);
+    dispatcher.removeCallback<EASY_MSG_ID>(hostObj);
   }
 
 private:
-  EasyMsgDispatcher &getDispatcher();
+  static EasyMsgDispatcher &getDispatcher();
 
-  void *host_ptr;
+  void *host_ptr{};
 };
 
 } // namespace em

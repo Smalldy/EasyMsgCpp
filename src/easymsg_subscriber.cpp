@@ -2,7 +2,7 @@
 #include "easy_msg.h"
 namespace em {
 
-EasyMsgSubscriber::EasyMsgSubscriber() {}
+EasyMsgSubscriber::EasyMsgSubscriber() = default;
 
 EasyMsgSubscriber::~EasyMsgSubscriber() {
   getDispatcher().removeCallback(host_ptr);
