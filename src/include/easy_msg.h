@@ -7,12 +7,11 @@
 #include <utility>
 
 #ifdef ENABLE_BOOST_SERIALIZATION
-//add boost serialization
+// add boost serialization
 #endif
 
 #include "easymsg_dispatcher.h"
 #include "easymsg_export.h"
-
 
 namespace em {
 
@@ -21,7 +20,7 @@ class EasyMsg;
 class EASYMSG_API EasyMsg {
 public:
   EasyMsg();
-  virtual ~EasyMsg(){};
+  virtual ~EasyMsg() = default;
   virtual std::string id() const = 0;
 
   template <typename T> struct is_easymsg {
@@ -32,13 +31,13 @@ public:
 
   // c++17 support constexpr if
 #if ((defined(_MSVC_LANG) && _MSVC_LANG >= 201703L) || __cplusplus >= 201703L)
-  template <typename MSGID> bool match() {
-    is_easymsg<MSGID> test_easymsg;
+  template <typename EASY_MSG_ID> bool match() {
+    is_easymsg<EASY_MSG_ID> test_easymsg;
     if constexpr (test_easymsg.value) { // c++17
-      return id() == MSGID::value;
+      return id() == EASY_MSG_ID::value;
     } else {
       std::cerr << "匹配消息ID时发生错误，检查是否使用了未定义的消息？ 检查:"
-                << typeid(MSGID).name() << std::endl;
+                << typeid(EASY_MSG_ID).name() << std::endl;
       return false;
     }
   }
@@ -66,7 +65,7 @@ public:
   struct _MSG_##_MSG : public _MSG_, public em::EasyMsg {                      \
   public:                                                                      \
     _MSG_##_MSG() = default;                                                   \
-    _MSG_##_MSG(_MSG_ msg) : _MSG_{msg} {}                                     \
+    _MSG_##_MSG(_MSG_ msg) : _MSG_{std::move(msg)} {}                          \
     std::string id() const { return MSG_ID_STR(_MSG_); }                       \
   };                                                                           \
   static const char *_MSG_ID_##helper{(char *)MSG_ID_STR(_MSG_)};              \
@@ -92,16 +91,16 @@ public:
  * 只对文件内可见，所以不会引发任何问题。
  **/
 
-template <typename _MSG_ID>
-auto easymsg_cast(EasyMsg *msg) -> typename _MSG_ID::MsgType * {
-  return static_cast<typename _MSG_ID::MsgType *>(msg);
+template <typename EASY_MSG_ID>
+auto easymsg_cast(EasyMsg *msg) -> typename EASY_MSG_ID::MsgType * {
+  return static_cast<typename EASY_MSG_ID::MsgType *>(msg);
 }
 
 extern EASYMSG_API EasyMsgDispatcher ___dispatcher;
 
-template <typename _MSG_ID>
-void EASYMSG_API sendMsg(typename _MSG_ID::MsgType *msg) {
-  ___dispatcher.dispatchMsg<_MSG_ID>(msg);
+template <typename EASY_MSG_ID>
+void EASYMSG_API sendMsg(typename EASY_MSG_ID::MsgType *msg) {
+  ___dispatcher.dispatchMsg<EASY_MSG_ID>(msg);
 }
 
 } // namespace em

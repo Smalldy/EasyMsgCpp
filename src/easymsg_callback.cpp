@@ -1,7 +1,7 @@
 #include "easymsg_callback.h"
 
-#include <utility>
 #include "easy_msg.h"
+#include <utility>
 namespace em {
 
 EasyMsgCallback::EasyMsgCallback(std::function<void(em::EasyMsg *)> func) {
