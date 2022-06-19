@@ -19,7 +19,8 @@ public:
     host_ptr = static_cast<void *>(hostObj);
   }
 
-  template <typename EASY_MSG_ID, typename HOST_OBJ> void unSubscribe(HOST_OBJ *hostObj) {
+  template <typename EASY_MSG_ID, typename HOST_OBJ>
+  void unSubscribe(HOST_OBJ *hostObj) {
     if (host_ptr != static_cast<void *>(hostObj)) {
       return;
     }
