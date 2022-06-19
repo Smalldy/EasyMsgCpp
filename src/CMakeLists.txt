@@ -1,5 +1,4 @@
 option(BUILD_SHARED_LIBS "Specifies the type of libraries (SHARED or STATIC) to build" OFF)
-message(STATUS "Start building : " ${PROJECT_NAME})
 
 if (BUILD_SHARED_LIBS)
     add_library(EasyMsg SHARED)
@@ -9,10 +8,22 @@ else()
     add_library(EasyMsg STATIC)
 endif()
 
+option(ENABLE_BOOST_SERIALIZATION "You can open this option to support boost serialization" ON)
+option(NABLE_BOOST_SERIALIZATION "test affect to code" ON)
+message(${ENABLE_BOOST_SERIALIZATION})
+message(${NABLE_BOOST_SERIALIZATION})
+if(ENABLE_BOOST_SERIALIZATION)
+    message("ENABLE_BOOST_SERIALIZATION")
+    add_definitions(-DENABLE_BOOST_SERIALIZATION)
+    list(APPEND CMAKE_PREFIX_PATH ${BOOST_DIR})
+    find_package(Boost REQUIRED COMPONENTS serialization)
+
+endif()
+
 target_compile_features(EasyMsg PUBLIC cxx_std_11)
 set_target_properties(EasyMsg PROPERTIES CXX_EXTENSIONS OFF)
 
-set(EASYMASG_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
+set(EASYMSG_INCLUDE_DIR ${CMAKE_CURRENT_SOURCE_DIR}/include)
 target_sources(EasyMsg
     PRIVATE
         easy_msg.cpp
@@ -29,7 +40,8 @@ target_sources(EasyMsg
 
 target_include_directories(EasyMsg
     PRIVATE
-        ${EASYMASG_INCLUDE_DIR})
+        ${EASYMSG_INCLUDE_DIR}
+        )
 
 
 set(CMAKE_INSTALL_PREFIX ${PROJECT_BINARY_DIR}/install)
@@ -49,4 +61,3 @@ install(EXPORT EasyMsgTargets DESTINATION ${PROJECT_SOURCE_DIR}/cmake)
 configure_file(${PROJECT_SOURCE_DIR}/config/EasyMsgConfig.cmake.in ${PROJECT_SOURCE_DIR}/cmake/EasyMsgConfig.cmake)
 install(FILES ${PROJECT_SOURCE_DIR}/cmake/EasyMsgConfig.cmake DESTINATION ${CMAKE_INSTALL_PREFIX}/cmake)
 
-message(STATUS "Stop building : " ${PROJECT_NAME})
